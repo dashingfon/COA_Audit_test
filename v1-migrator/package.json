@@ -1,0 +1,37 @@
+{
+  "name": "v1-migration-contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "coverage":"hardhat coverage",
+    "start": "npx hardhat node",
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "base-testnet-migrator": "npx hardhat run scripts/migrator.ts --network baseTestnet",
+    "base-testnet-migrator-upgrade": "npx hardhat run scripts/migrator-upgrade.ts --network baseTestnet",
+    "mainnet-migrator": "npx hardhat run scripts/migrator.ts --network mainnet",
+    "mainnet-migrator-upgrade": "npx hardhat run scripts/upgrade-migrator.ts --network mainnet",
+    "bsc-testnet-migrator": "npx hardhat run scripts/migrator.ts --network bscTestnet",
+    "bsc-mainnet-migrator": "npx hardhat run scripts/migrator.ts --network bscMainnet",
+    "verify-mainnet-migrator": "npx hardhat verify  --network mainnet 0x42b58F53E46975C6b2109Ec927Cb66A5802b103E",
+    "verify-bsc-testnet-migrator": "npx hardhat verify  --network bscTestnet 0x3aE0F1CF8867D8a555fa9603281A9258806C2859",
+    "verify-bsc-mainnet-migrator": "npx hardhat verify  --network bscMainnet 0x1D72D899Ed60EB0BC33555248dd58A4ebE72d28F",
+    "verify-base-testnet-migrator": "npx hardhat verify  --network baseTestnet 0x3584990888D4c1eb80F6b3C4DD9866774014d3a9",
+    "slither": "slither . --solc-remaps '@openzeppelin=node_modules/@openzeppelin @chainlink=node_modules/@chainlink' --exclude naming-convention,external-function,low-level-calls"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "hardhat": "^2.22.6"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.7.3",
+    "@openzeppelin/contracts-upgradeable": "^4.7.0",
+    "@openzeppelin/hardhat-upgrades": "^3.2.0",
+    "fs-extra": "^11.2.0"
+  }
+}
