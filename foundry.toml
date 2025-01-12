@@ -1,7 +1,10 @@
 [profile.default]
-src = "src"
+src = "v1-migrator"
 out = "out"
 libs = ["lib"]
 remappings = ["@openzeppelin/=v1-migrator/node_modules/@openzeppelin/"]
+
+[profile.build]
+skip = ["v1-migrator/node_modules/*"]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

@@ -1,4 +1,4 @@
 {
-    "filter_paths": "(lib/|src/test)",
-    "include_paths": "(lib/|src/test)"
+    "filter_paths": "(test/|v1-migrator/)",
+    "include_paths": "(v1-migrator/contracts/COA-Contracts/)"
 }

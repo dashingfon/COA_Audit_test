@@ -1,10 +1,30 @@
 import json
 
-result = []
 
-with open("res.json", 'r') as iff:
-    data = json.load(iff)
+def strip(json_file: str):
+    output = {}
+    detectors = []
 
-    
-# with open("filtered_res.json", 'w') as off:
-#     json.dump({"description": description}, off, indent=4)
+    with open(json_file, 'r') as file:
+        data = json.load(file)
+
+    output["success"] = data["success"]
+    output["error"] = data["error"]
+    output["results"] = {"detectors": []}
+
+    for detector in data["results"]["detectors"]:
+        detectors.append(
+            {
+                "description": detector["description"],
+                "markdown": detector["markdown"],
+                "id": detector["id"],
+                "check": detector["check"],
+                "impact": detector["impact"],
+                "confidence": detector["confidence"],
+            }
+        )
+
+    output["results"]["detectors"] = detectors
+
+    with open(f"{json_file[:-5]}_striped.json", 'w') as out:
+        json.dump(output, out, indent=4)
