@@ -60,6 +60,7 @@ contract ATLACRE is ERC721A, Ownable {
         returns (bool)
     {
         IERC20 token = IERC20(_paymentToken);
+        // @audit no use of safeTransferFrom
         token.transferFrom(
             payee,
             _feeCollector,

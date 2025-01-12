@@ -172,6 +172,7 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
             revert TransactionMessage("Insufficient balance");
         }
 
+        // @audit safemath not needed with solidity versiion above 0.8
         uint tokenBToRecieve = Requirements.price.mul(_amount);
 
         balance = IERC20Upgradeable(Requirements.tokenV2).balanceOf(
@@ -182,6 +183,7 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
             revert TransactionMessage("Insufficient token balance on migrator");
         }
 
+        // @audit what of tokens that do not return a value
         bool success = IERC20Upgradeable(Requirements.tokenV1).transferFrom(
             _msgSender(),
             address(this),
