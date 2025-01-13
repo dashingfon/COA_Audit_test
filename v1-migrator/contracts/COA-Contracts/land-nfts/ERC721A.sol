@@ -196,6 +196,7 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
                         return ownership;
                     }
                     // Invariant:
+                    // @audit check this invariant
                     // There will always be an ownership that has an address and is not burned
                     // before an ownership that does not have an address and is not burned.
                     // Hence, curr will not underflow.
@@ -484,6 +485,9 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
      *
      * Emits a {Transfer} event.
      */
+    
+    // @audit no check on the tokenId
+    // @audit burnCOunter can exceed
     function _burn(uint256 tokenId) internal virtual {
         TokenOwnership memory prevOwnership = ownershipOf(tokenId);
 

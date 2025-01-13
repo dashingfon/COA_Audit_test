@@ -229,6 +229,7 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
             for (uint i = 0; i < _acre.length; i++) {
                 _withdrawOldNFT(Requirements.acre, _acre[i]);
             }
+            // @audit if the tokens do not belong to the contract the nft will be stuck in the contract
             _mintNewNFT(
                 Requirements.acre,
                 Requirements.acreV2,
