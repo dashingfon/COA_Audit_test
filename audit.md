@@ -1,6 +1,59 @@
 # findings
 
+## Safe math is not needed with solidity 0.8 and above- Low
+
+## migrating token that do not return a value from transferFrom function will revert  - medium
+
+## users token can get stuck in the contract when migrateAllAsset is called - medium
+
+## no access control in token function mint allows anyone to mint tokens - medium
+
+## no use of safetransferfrom - medium
+
+## if the first token owner is burnt, ownershipof will revert - low
+
+## there is no check on the function _burn tokenId - low
+
+## it is possible for _burnCOunter to exceed _currentIndex times - low
+
+## the requirements price is not constrained - medium
+
+## no check if the tokens are the same when setting token Info - low
+
+
+# tests
+
+1. test migrateERC20Token token fail that does not return on transferfrom 
+2. test migrateERC20Token token pass that does not return on transferfrom 
+3. test migrateAllAsset token stuck
+4. test migrateAllAsset pass
+5. test setERC721Requirements pass
+6. test setERC721Requirements fail
+7. test setTokenInfo fail
+8. test setTokenInfo pass
+9. test BUSD pass and dos and fail
+10. test ACRE mint pass
+11. test ownershipOf fail
+12. test burn function
+
+
 # invariants
+
+1. underflow in erc721a totalSupply
+2. invariant in erc721a ownershipOf
+
+# deliverables
+
+1. audit report and 
+2. slither tool report
+3. unit test
+4. Risk Assessment Report:
+    Business logic risks and mitigation.
+    Deployment risks and mitigation.{initializer}
+5. Screen Recording: Upload the recording to a cloud storage service (e.g., Google Drive or Dropbox) and provide a shareable link.
+Include an overview of the tools and methods used.
+Clearly demonstrate the steps taken for auditing, testing, and analysis.
+
 
 # contracts
 
