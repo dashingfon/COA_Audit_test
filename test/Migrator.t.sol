@@ -108,6 +108,16 @@ contract MigratorTest is Test {
         _acre.setCurrentBatch(quantity, price, true);
         _acreV2.setCurrentBatch(quantity, price, true);
 
+        _acreV2.setFreeParticipant(address(migrator), true);
+        migrator.setERC721Requirements(address(_acre), address(_yard), address(_plot), address(_acreV2), address(_yardV2), address(_plotV2));
+
+        uint256[] memory acresId = new uint256[](1);
+        acresId[0] = 0;
+        uint256[] memory otherId = new uint256[](0);
+
+        uint256 bob_acre_balance_before = _acre.balanceOf(bob);
+        uint256 bob_acreV2_balance_before = _acreV2.balanceOf(bob);
+
         vm.startPrank(bob);
         busd.approve(address(_acre), amount);
         _acre.mint(mint_quantity);
@@ -119,16 +129,6 @@ contract MigratorTest is Test {
         busd.approve(address(_acreV2), amount);
         _acreV2.mint(2);
         vm.stopPrank();
-
-        _acreV2.setFreeParticipant(address(migrator), true);
-        migrator.setERC721Requirements(address(_acre), address(_yard), address(_plot), address(_acreV2), address(_yardV2), address(_plotV2));
-
-        uint256[] memory acresId = new uint256[](1);
-        acresId[0] = 0;
-        uint256[] memory otherId = new uint256[](0);
-
-        uint256 bob_acre_balance_before = _acre.balanceOf(bob);
-        uint256 bob_acreV2_balance_before = _acreV2.balanceOf(bob);
 
         // execute
 
