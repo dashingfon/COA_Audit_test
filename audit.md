@@ -4,7 +4,7 @@
 
 ## migrating token that do not return a value from transferFrom function will revert  - medium
 
-## users token can get stuck in the contract when migrateAllAsset is called - medium
+## users token can get stuck in the contract if another user with a bigger index migrates before - medium
 
 ## no access control in token function mint allows anyone to mint tokens - medium
 
