@@ -5,13 +5,13 @@ import {Test} from "forge-std/Test.sol";
 
 pragma solidity 0.8.20;
 
-contract ACRETest is ATLACRE {
+contract ASSET_Test is Test {
 
-    function testmint() external {
+    function setUp() external {
 
     }
 
-    function testmintFail() external {
+    function testmint() external {
 
     }
 
@@ -24,6 +24,10 @@ contract ACRETest is ATLACRE {
     }
 
     function testBurnFail() external {
+
+    }
+
+    function testSettingParams() external {
 
     }
 }

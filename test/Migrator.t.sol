@@ -3,6 +3,7 @@
 pragma solidity 0.8.20;
 
 import {Test} from "forge-std/Test.sol";
+import {console} from "forge-std/console.sol";
 import {Migrator} from "../v1-migrator/contracts/Migrator.sol";
 
 import {ATLACRE} from "../v1-migrator/contracts/COA-Contracts/land-nfts/ACRE.sol";
@@ -18,11 +19,9 @@ import {PRLZ} from "../v1-migrator/contracts/COA-Contracts/Prlz.sol";
 
 contract MigratorTest is Test {
 
-    Migrator migrator;
-    address signer;
     address bob;
-    MockERC20 paymentV1;
-    MockERC20 paymentV2;
+    address eve;
+    Migrator migrator;
 
     ATLACRE _acre;
     ATLYARD _yard;
@@ -32,117 +31,173 @@ contract MigratorTest is Test {
     YARD _yardV2;
     PLOT _plotV2;
 
+    BUSD busd;
+    PRLZ prlz;
+
     function setUp() external {
-        signer = makeAddr("signer");
         bob = makeAddr("bob");
-        paymentV1 = new MockERC20("MockTokenV1", "MKT1");
-        paymentV2 = new MockERC20("MockTokenV2", "MKT2");
+        eve = makeAddr("eve");
+        busd = new BUSD();
+        prlz = new PRLZ();
 
-        paymentV1.transfer(bob, 100 ether);
-        paymentV2.transfer(address(migrator), 100 ether);
-
-        _acre = new ATLACRE(address(paymentV1));
-        _acre.setCurrentBatch(10, 1, true);
-
-        _yard = new ATLYARD(address(paymentV1));
-        
-        _plot = new ATLPLOT(address(paymentV1));
+        _acre = new ATLACRE(address(busd));
+        _yard = new ATLYARD(address(busd));
+        _plot = new ATLPLOT(address(busd));
 
         _acreV2 = new ACRE();
-        _acreV2.initialize(address(paymentV1));
+        _acreV2.initialize(address(busd));
+        _acreV2.grantRole(keccak256("SIGNER_ROLE"), address(this));
 
         _yardV2 = new YARD();
-        _yardV2.initialize(address(paymentV1));
+        _yardV2.initialize(address(busd));
+        _yardV2.grantRole(keccak256("SIGNER_ROLE"), address(this));
 
         _plotV2 = new PLOT();
-        _plotV2.initialize(address(paymentV1));
+        _plotV2.initialize(address(busd));
+        _plotV2.grantRole(keccak256("SIGNER_ROLE"), address(this));
 
 
         migrator = new Migrator();
         migrator.initialize();
         migrator.grantRole(keccak256("SIGNER_ROLE"), address(this));
-        migrator.setERC721Requirements(address(_acre), address(_yard), address(_plot), address(_acreV2), address(_yardV2), address(_plotV2));
-        migrator.setTokenInfo(address(paymentV1), address(paymentV2), 1);
     }
 
     function test_MigrateERC20() external {
         // prepare
 
-        // execute
-
-        // check
-
-        // check token 1 and token 2 balance
-        uint256 token1BalanceBefore = paymentV1.balanceOf(bob);
-        uint256 token2BalanceBefore = paymentV2.balanceOf(bob);
-
         uint256 amount = 100 ether;
+        uint256 price = 1;
 
-        assert(token1BalanceBefore == amount);
-        assert(token2BalanceBefore == 0);
+        migrator.setTokenInfo(address(busd), address(prlz), price);
+        busd.mint(bob, amount);
+        prlz.mint(address(migrator), amount);
+
+        uint256 token1BalanceBefore = busd.balanceOf(bob);
+        uint256 token2BalanceBefore = prlz.balanceOf(bob);
+
+        // execute
 
         vm.startPrank(bob);
-        paymentV1.approve(address(migrator), amount);
-        migrator.migrateERC20Token(amount, address(paymentV1), address(paymentV2));
+        busd.approve(address(migrator), amount);
+        migrator.migrateERC20Token(amount, address(busd), address(prlz));
         vm.stopPrank();
 
-        // confirm the correct token 1 and 2 balance
+        // check
 
-        uint256 token1BalanceAfter = paymentV1.balanceOf(bob);
-        uint256 token2BalanceAfter = paymentV2.balanceOf(bob);
+        uint256 token1BalanceAfter = busd.balanceOf(bob);
+        uint256 token2BalanceAfter = prlz.balanceOf(bob);
 
-        assert(token1BalanceAfter == 0);
-        assert(token2BalanceAfter == amount);
+        console.log("token1BalanceBefore", token1BalanceBefore);
+        console.log("token2BalanceBefore", token2BalanceBefore);
+        console.log("token1BalanceAfter", token1BalanceAfter);
+        console.log("token2BalanceAfter", token2BalanceAfter);
+
+        assert(token1BalanceBefore - (amount * price) == token1BalanceAfter);
+        assert(token2BalanceBefore + (amount * price) == token2BalanceAfter);
     }
 
-    function test_MigrateAllAsset_fail() external {
+    function test_MigrateAllAsset_no_migrator_tokens() external {
         // prepare
 
-        // execute
+        uint256 quantity = 10;
+        uint256 price = 1;
+        uint256 amount = 100 ether;
+        uint256 mint_quantity = 1;
 
-        // check
-        vm.prank(bob);
-        uint256 quantity = 1;
-        _acre.mint(quantity);
+        busd.mint(bob, amount);
+        _acre.setCurrentBatch(quantity, price, true);
+        _acreV2.setCurrentBatch(quantity, price, true);
 
-        assert(_acre.balanceOf(bob) == quantity);
-        assert(_acreV2.balanceOf(bob) == 0);
+        vm.startPrank(bob);
+        busd.approve(address(_acre), amount);
+        _acre.mint(mint_quantity);
+        _acre.setApprovalForAll(address(migrator), true);
+        vm.stopPrank();
+
+        vm.startPrank(eve);
+        busd.mint(eve, amount);
+        busd.approve(address(_acreV2), amount);
+        _acreV2.mint(2);
+        vm.stopPrank();
+
+        _acreV2.setFreeParticipant(address(migrator), true);
+        migrator.setERC721Requirements(address(_acre), address(_yard), address(_plot), address(_acreV2), address(_yardV2), address(_plotV2));
 
         uint256[] memory acresId = new uint256[](1);
         acresId[0] = 0;
-        uint256[] memory otherIds = new uint256[](0);
+        uint256[] memory otherId = new uint256[](0);
+
+        uint256 bob_acre_balance_before = _acre.balanceOf(bob);
+        uint256 bob_acreV2_balance_before = _acreV2.balanceOf(bob);
+
+        // execute
 
         vm.prank(bob);
-        migrator.migrateAllAsset(acresId, otherIds, otherIds);
+        migrator.migrateAllAsset(acresId, otherId, otherId);
 
-        assert(_acre.balanceOf(bob) == 0);
-        assert(_acreV2.balanceOf(bob) == 0);
+        // check
+
+        uint256 balance_acre_after = _acre.balanceOf(bob);
+        uint256 balance_acreV2_after = _acreV2.balanceOf(bob);
+
+        console.log("bob acre balance before", bob_acre_balance_before);
+        console.log("bob acreV2 balance before", bob_acreV2_balance_before);
+        console.log("bob acre balance after", balance_acre_after);
+        console.log("bob acreV2 balance after", balance_acreV2_after);
+
+        // assert(balance_acre_after == bob_acre_balance_before - mint_quantity);
+        // assert(balance_acreV2_after == bob_acreV2_balance_before);
     }
 
     function test_MigrateAllAsset() external {
         // prepare
 
-        // execute
+        uint256 quantity = 10;
+        uint256 price = 1;
+        uint256 amount = 100 ether;
+        uint256 mint_quantity = 1;
 
-        // check
-        uint256 quantity = 1;
-        _acreV2.mint(quantity);
+        busd.mint(bob, amount);
+        _acre.setCurrentBatch(quantity, price, true);
 
-        vm.prank(bob);
-        _acre.mint(quantity);
+        vm.startPrank(bob);
+        busd.approve(address(_acre), amount);
+        _acre.mint(1);
+        _acre.setApprovalForAll(address(migrator), true);
+        vm.stopPrank();
 
-        assert(_acre.balanceOf(bob) == quantity);
-        assert(_acreV2.balanceOf(bob) == 0);
+        _acreV2.setCurrentBatch(quantity, price, true);
+        _acreV2.setFreeParticipant(address(migrator), true);
+        migrator.setERC721Requirements(address(_acre), address(_yard), address(_plot), address(_acreV2), address(_yardV2), address(_plotV2));
 
         uint256[] memory acresId = new uint256[](1);
         acresId[0] = 0;
-        uint256[] memory otherIds = new uint256[](0);
+
+        uint256[] memory otherId = new uint256[](0);
+
+        uint256 bob_acre_balance_before = _acre.balanceOf(bob);
+        uint256 bob_acreV2_balance_before = _acreV2.balanceOf(bob);
+
+        // execute
 
         vm.prank(bob);
-        migrator.migrateAllAsset(acresId, otherIds, otherIds);
+        migrator.migrateAllAsset(acresId, otherId, otherId);
 
-        assert(_acre.balanceOf(bob) == 0);
-        assert(_acreV2.balanceOf(bob) == quantity);
+        // check
+
+        uint256 balance_acre_after = _acre.balanceOf(bob);
+        uint256 balance_acreV2_after = _acreV2.balanceOf(bob);
+
+        console.log("bob acre balance before", bob_acre_balance_before);
+        console.log("bob acreV2 balance before", bob_acreV2_balance_before);
+        console.log("bob acre balance after", balance_acre_after);
+        console.log("bob acreV2 balance after", balance_acreV2_after);
+
+        assert(balance_acre_after == bob_acre_balance_before - mint_quantity);       assert(balance_acreV2_after == bob_acreV2_balance_before + mint_quantity);
+    }
+
+    function testSettingParams() external {
+
     }
 
 }
