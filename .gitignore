@@ -6,3 +6,4 @@ blob.txt
 .mypy_cache/
 __pycache__/
 node_modules/
+audit.md
