@@ -1,6 +1,5 @@
 # Report
 
-
 ## Gas Optimizations
 
 
