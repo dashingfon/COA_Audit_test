@@ -20,6 +20,22 @@ slither .
 
 [Slither Report](./reports/slither_report.md)
 
+- ignoring return value by token.transferFrom(payee,_feeCollector,_currentBatch.price * quantity)
+
+This is present in the contracts
+
+- ATLPLOT
+- PLOT
+- ATLYARD
+- YARD
+- ATLACRE
+- ACRE
+
+- no event emissions on state variable change
+
+This is present in the contracts
+
+
 2. 4naly3er
 
 4naly3er is a tool used for analyzing Ethereum smart contracts, particularly during security audits.
@@ -52,7 +68,7 @@ Done in 24.06s.
 
 ```
 
-[4naly3er Report](./reports/4naly3er_report.md)
+this is the report [4naly3er Report](./reports/4naly3er_report.md)
 
 > ## Tests
 
@@ -125,11 +141,18 @@ $ forge coverage -skip "v1-migrator/node_modules/*"
 
 * Risks
 
+- centralization risk
+- unsafe use of transfer from
+- owner can be set to zero address
+- no limit on the fees
+
 * Mitigation
 
 ### Deployment
 
 * Risks
+
+- initializer can be frontrun
 
 * Mitigation
 
