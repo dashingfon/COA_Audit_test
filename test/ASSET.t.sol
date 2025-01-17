@@ -6,6 +6,7 @@ import {console} from "forge-std/console.sol";
 
 import {Migrator} from "../v1-migrator/contracts/Migrator.sol";
 
+import {ERC721A} from "../v1-migrator/contracts/COA-Contracts/land-nfts/ERC721A.sol";
 import {ATLACRE} from "../v1-migrator/contracts/COA-Contracts/land-nfts/ACRE.sol";
 import {ATLPLOT} from "../v1-migrator/contracts/COA-Contracts/land-nfts/PLOT.sol";
 import {ATLYARD} from "../v1-migrator/contracts/COA-Contracts/land-nfts/YARD.sol";
@@ -64,108 +65,152 @@ contract ASSET_Test is Test {
     }
 
     function testACRE_mint() external {
+        // prepare
+        busd.mint(bob, 100 ether);
+        _acre.setCurrentBatch(1, 1, true);
+        vm.prank(bob);
+        busd.approve(address(_acre), 10 ether);
 
+        // execute
+        vm.prank(bob);
+        _acre.mint(1);
+
+        // validate
+        assert(_acre.balanceOf(bob) == 1);
+        assert(_acre.ownerOf(0) == bob);
     }
 
     function testACRE_TransferFromfail() external {
+        // prepare
+        busd.mint(bob, 100 ether);
+        _acre.setCurrentBatch(1, 1, true);
 
+        // execute and check
+        vm.startPrank(bob);
+        vm.expectRevert();
+        _acre.transferFrom(bob, eve, 0);
+        vm.stopPrank();
     }
 
     function testACRE_TransferFrom() external {
+        // prepare
+        busd.mint(bob, 100 ether);
+        _acre.setCurrentBatch(1, 1, true);
+        vm.startPrank(bob);
+        busd.approve(address(_acre), 10 ether);
+        _acre.mint(1);
+        vm.stopPrank();
 
+        // execute
+        vm.prank(bob);
+        _acre.transferFrom(bob, eve, 0);
+
+        // validate
+        assert(_acre.balanceOf(eve) == 1);
+        assert(_acre.ownerOf(0) == eve);
     }
 
     function testACRE_SettingParams() external {
+        // execute
+        bool active_set = false;
+        uint256 tx_fee = 10;
+        address payment_token = address(busd);
+        address fee_collector = address(this);
+        address free_participant_controller = address(this);
+        address free_participant = address(this);
 
+        _acre.setCurrentBatchActive(active_set);
+        _acre.setTxFee(tx_fee);
+        _acre.setPaymentToken(payment_token);
+        _acre.setFeeCollector(fee_collector);
+        _acre.setFreeParticipantController(free_participant_controller, true);
+        _acre.setFreeParticipant(free_participant, true);
+
+        // check
+        (,, bool active) = _acre._currentBatch();
+
+        // validate
+        assert(active == active_set);
+        assert(_acre._paymentToken() == payment_token);
+        assert(_acre._feeCollector() == fee_collector);
+        assert(_acre.freeParticipantControllers(free_participant_controller) == true);
+        assert(_acre.freeParticipant(free_participant) == true);
     }
 
+    function testACREV2_mint() external {
+        // prepare
+        busd.mint(bob, 100 ether);
+        _acreV2.setCurrentBatch(1, 1, true);
+        vm.prank(bob);
+        busd.approve(address(_acreV2), 10 ether);
 
+        // execute
+        vm.prank(bob);
+        _acreV2.mint(1);
 
-    // function testACRE_mint() external {
+        // validate
+        assert(_acreV2.balanceOf(bob) == 1);
+        assert(_acreV2.ownerOf(0) == bob);
+    }
 
-    // }
+    function testACREV2_TransferFromfail() external {
+        // prepare
+        busd.mint(bob, 100 ether);
+        _acreV2.setCurrentBatch(1, 1, true);
 
-    // function testACRE_TransferFromfail() external {
+        // execute and check
+        vm.startPrank(bob);
+        vm.expectRevert();
+        _acreV2.transferFrom(bob, eve, 0);
+        vm.stopPrank();
+    }
 
-    // }
+    function testACREV2_TransferFrom() external {
+        // prepare
+        busd.mint(bob, 100 ether);
+        _acreV2.setCurrentBatch(1, 1, true);
+        vm.startPrank(bob);
+        busd.approve(address(_acreV2), 10 ether);
+        _acreV2.mint(1);
+        vm.stopPrank();
 
-    // function testACRE_TransferFrom() external {
+        // execute
+        vm.prank(bob);
+        _acreV2.transferFrom(bob, eve, 0);
 
-    // }
+        // validate
+        assert(_acreV2.balanceOf(eve) == 1);
+        assert(_acreV2.ownerOf(0) == eve);
+    }
 
-    // function testACRE_SettingParams() external {
+    function testACREV2_SettingParams() external {
+        // prepare
+        _acreV2.grantRole(keccak256("SIGNER_ROLE"), address(this));
 
-    // }
+        // execute
+        bool active_set = false;
+        uint256 tx_fee = 10;
+        address payment_token = address(busd);
+        address fee_collector = address(this);
+        address free_participant_controller = address(this);
+        address free_participant = address(this);
 
+        _acre.setCurrentBatchActive(active_set);
+        _acre.setTxFee(tx_fee);
+        _acre.setPaymentToken(payment_token);
+        _acre.setFeeCollector(fee_collector);
+        _acre.setFreeParticipantController(free_participant_controller, true);
+        _acre.setFreeParticipant(free_participant, true);
 
+        // check
+        (,, bool active) = _acre._currentBatch();
 
-    // function testACRE_mint() external {
+        // validate
+        assert(active == active_set);
+        assert(_acre._paymentToken() == payment_token);
+        assert(_acre._feeCollector() == fee_collector);
+        assert(_acre.freeParticipantControllers(free_participant_controller) == true);
+        assert(_acre.freeParticipant(free_participant) == true);
+    }
 
-    // }
-
-    // function testACRE_TransferFromfail() external {
-
-    // }
-
-    // function testACRE_TransferFrom() external {
-
-    // }
-
-    // function testACRE_SettingParams() external {
-
-    // }
-
-
-
-    // function testACRE_mint() external {
-
-    // }
-
-    // function testACRE_TransferFromfail() external {
-
-    // }
-
-    // function testACRE_TransferFrom() external {
-
-    // }
-
-    // function testACRE_SettingParams() external {
-
-    // }
-
-
-
-    // function testACRE_mint() external {
-
-    // }
-
-    // function testACRE_TransferFromfail() external {
-
-    // }
-
-    // function testACRE_TransferFrom() external {
-
-    // }
-
-    // function testACRE_SettingParams() external {
-
-    // }
-
-
-
-    // function testACRE_mint() external {
-
-    // }
-
-    // function testACRE_TransferFromfail() external {
-
-    // }
-
-    // function testACRE_TransferFrom() external {
-
-    // }
-
-    // function testACRE_SettingParams() external {
-
-    // }
 }
