@@ -4,6 +4,16 @@ This is my submission for The Mobi assesment
 
 > ## Audit Report
 
+## Findings Summary
+
+| Severity               |  Found    |
+|------------------------|-----------|
+| High                   |   3       |
+| Medium                 |   3       |
+| Low                    |   3       |
+| Informational          |   3       |
+
+
 [Audit Report](./reports/audit_report.md)
 
 > ## Automated Tests and Analysis
