@@ -4,9 +4,46 @@ This is my submission for Mobi assesment
 
 > ## Audit Report
 
-> ## Slither Output and Analysis
+find attached the audit report at this location
+
+> ## Automated Tests and Analysis
+
+1. Slither
+
+requirements:
+
+```bash
+
+```
+
+2. 4nalyzer
+
+requirements:
+
+```bash
+
+```
 
 > ## Tests
+
+<!-- explain the unit tests -->
+
+1. requirements
+foundry
+
+```bash
+$ forge test
+
+bangs
+```
+
+<!-- display the test coverage -->
+
+``` bash
+$ forge coverage
+
+
+```
 
 > ## Risk Assesment
 
