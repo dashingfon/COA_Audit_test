@@ -147,6 +147,6 @@ consider deploying the contracts with a Factory Contract
 
 > ## Screen Recording
 
-[Video]()
+[Video](https://www.youtube.com/watch?v=Ue_aYCvEm70)
 
 
