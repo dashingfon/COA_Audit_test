@@ -96,7 +96,7 @@ contract MigratorTest is Test {
         assert(token2BalanceBefore + (amount * price) == token2BalanceAfter);
     }
 
-    function test_MigrateAllAsset_no_migrator_tokens() external {
+    function test_MigrateAllAsset_different_token_owners() external {
         // prepare
 
         uint256 quantity = 10;
@@ -105,6 +105,7 @@ contract MigratorTest is Test {
         uint256 mint_quantity = 1;
 
         busd.mint(bob, amount);
+        busd.mint(eve, amount);
         _acre.setCurrentBatch(quantity, price, true);
         _acreV2.setCurrentBatch(quantity, price, true);
 
@@ -112,11 +113,7 @@ contract MigratorTest is Test {
         migrator.setERC721Requirements(address(_acre), address(_yard), address(_plot), address(_acreV2), address(_yardV2), address(_plotV2));
 
         uint256[] memory acresId = new uint256[](1);
-        acresId[0] = 0;
         uint256[] memory otherId = new uint256[](0);
-
-        uint256 bob_acre_balance_before = _acre.balanceOf(bob);
-        uint256 bob_acreV2_balance_before = _acreV2.balanceOf(bob);
 
         vm.startPrank(bob);
         busd.approve(address(_acre), amount);
@@ -125,28 +122,72 @@ contract MigratorTest is Test {
         vm.stopPrank();
 
         vm.startPrank(eve);
-        busd.mint(eve, amount);
+        busd.approve(address(_acre), amount);
+        _acre.mint(mint_quantity);
+        _acre.setApprovalForAll(address(migrator), true);
         busd.approve(address(_acreV2), amount);
-        _acreV2.mint(2);
+        acresId[0] = 1;
+        migrator.migrateAllAsset(acresId, otherId, otherId);
         vm.stopPrank();
+
+        address _acre_owner_0 = _acre.ownerOf(0);
 
         // execute
 
+        acresId[0] = 0;
         vm.prank(bob);
         migrator.migrateAllAsset(acresId, otherId, otherId);
 
         // check
 
-        uint256 balance_acre_after = _acre.balanceOf(bob);
-        uint256 balance_acreV2_after = _acreV2.balanceOf(bob);
+        assert(_acreV2.ownerOf(0) != _acre_owner_0);
+        assert(_acreV2.ownerOf(1) == bob);
 
-        console.log("bob acre balance before", bob_acre_balance_before);
-        console.log("bob acreV2 balance before", bob_acreV2_balance_before);
-        console.log("bob acre balance after", balance_acre_after);
-        console.log("bob acreV2 balance after", balance_acreV2_after);
+    }
 
-        // assert(balance_acre_after == bob_acre_balance_before - mint_quantity);
-        // assert(balance_acreV2_after == bob_acreV2_balance_before);
+    function test_MigrateAllAsset_token_transfer() external {
+        // prepare
+
+        uint256 quantity = 10;
+        uint256 price = 1;
+        uint256 amount = 100 ether;
+        uint256 mint_quantity = 1;
+
+        busd.mint(bob, amount);
+        busd.mint(eve, amount);
+        _acre.setCurrentBatch(quantity, price, true);
+        _acreV2.setCurrentBatch(quantity, price, true);
+
+        _acreV2.setFreeParticipant(address(migrator), true);
+        migrator.setERC721Requirements(address(_acre), address(_yard), address(_plot), address(_acreV2), address(_yardV2), address(_plotV2));
+
+        uint256[] memory acresId = new uint256[](1);
+        uint256[] memory otherId = new uint256[](0);
+
+        vm.startPrank(bob);
+        busd.approve(address(_acre), amount);
+        _acre.mint(mint_quantity);
+        _acre.setApprovalForAll(address(migrator), true);
+        vm.stopPrank();
+
+        vm.startPrank(eve);
+        busd.approve(address(_acreV2), amount);
+        _acreV2.mint(5);
+        _acreV2.transferFrom(eve, address(migrator), 4);
+        vm.stopPrank();
+
+        // execute
+
+        acresId[0] = 0;
+        vm.prank(bob);
+        migrator.migrateAllAsset(acresId, otherId, otherId);
+
+        // check
+
+        console.log("acreV2 owner 0", _acreV2.ownerOf(0));
+        console.log("acreV2 owner 4", _acreV2.ownerOf(4));
+        console.log("bob address", bob);
+
     }
 
     function test_MigrateAllAsset() external {
@@ -195,9 +236,4 @@ contract MigratorTest is Test {
 
         assert(balance_acre_after == bob_acre_balance_before - mint_quantity);       assert(balance_acreV2_after == bob_acreV2_balance_before + mint_quantity);
     }
-
-    function testSettingParams() external {
-
-    }
-
 }

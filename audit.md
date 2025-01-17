@@ -2,11 +2,11 @@
 
 ## Safe math is not needed with solidity 0.8 and above- Low
 
-## migrating token that do not return a value from transferFrom function will revert  - medium
-
 ## users token can get stuck in the contract if another user with a bigger index migrates before - medium
 
-## no access control in token function mint allows anyone to mint tokens - medium
+## attacker can replace user migrated tokens by sending tokens to the migration contract - high
+
+## no access control in token function mint allows anyone to mint tokens{permanent dos} - high
 
 ## no use of safetransferfrom - medium
 
@@ -20,6 +20,9 @@
 
 ## no check if the tokens are the same when setting token Info - low
 
+## no zero address check on _feeCollector - medium
+
+## _burn function is not used - informational
 
 # tests
 
@@ -48,7 +51,7 @@
 2. slither tool report
 3. unit test
 4. Risk Assessment Report:
-    Business logic risks and mitigation.
+    Business logic risks and mitigation.{migrating method}
     Deployment risks and mitigation.{initializer}
 5. Screen Recording: Upload the recording to a cloud storage service (e.g., Google Drive or Dropbox) and provide a shareable link.
 Include an overview of the tools and methods used.
