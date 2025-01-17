@@ -28,6 +28,33 @@ The audit should be considered as one component of a comprehensive security stra
 
 ## Executive Summary
 
+### Migrator
+
+The Migrator contract facilitates the migration of ERC20 tokens and ERC721 NFTs from one version to another. It includes the following key features:
+
+Initialization and Roles:
+
+The contract is initialized with the initialize function, setting up the default admin role.
+A SIGNER_ROLE is defined for authorized operations.
+Requirements Structure:
+
+The Requirement struct holds addresses for different asset types (acre, plot, yard) and their new versions, as well as token addresses and a price.
+Mappings and State Variables:
+
+_withdrawOldNFT: Validates and withdraws an old NFT.
+_mintNewNFT: Mints new NFTs and transfers them to the user.
+migrateERC20Token: Migrates ERC20 tokens from one version to another.
+migrateAllAsset: Batch migrates multiple asset types (acre, plot, yard).
+Utility Functions:
+
+setERC721Requirements: Sets the necessary requirements for ERC721 migrations.
+setTokenInfo: Sets the necessary requirements for ERC20 migrations.
+
+
+### Assets
+
+The ATLACRE, ACRE, ATLPLOT, PLOT, ATLYARD and YARD contracts are ERC721A-compliant NFT contract with ownership control, designed for minting and managing batches of NFTs
+
 ## Findings
 
 ### High
