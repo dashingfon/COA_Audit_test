@@ -1,14 +1,14 @@
-This is my submission for Mobi assesment
+This is my submission for The Mobi assesment
 
 # Deliverables
 
 > ## Audit Report
 
-find attached the audit report at this location
+[Audit Report](./reports/audit_report.md)
 
 > ## Automated Tests and Analysis
 
-1. Slither
+- Slither
 
 Slither is a static analysis tool designed for smart contracts written in Solidity.
 
@@ -20,23 +20,8 @@ slither .
 
 [Slither Report](./reports/slither_report.md)
 
-- ignoring return value by token.transferFrom(payee,_feeCollector,_currentBatch.price * quantity)
 
-This is present in the contracts
-
-- ATLPLOT
-- PLOT
-- ATLYARD
-- YARD
-- ATLACRE
-- ACRE
-
-- no event emissions on state variable change
-
-This is present in the contracts
-
-
-2. 4naly3er
+- 4naly3er
 
 4naly3er is a tool used for analyzing Ethereum smart contracts, particularly during security audits.
 
@@ -68,16 +53,11 @@ Done in 24.06s.
 
 ```
 
-this is the report [4naly3er Report](./reports/4naly3er_report.md)
+[4naly3er Report](./reports/4naly3er_report.md)
 
 > ## Tests
 
-The Tests are written in foundry
-
-<!-- explain the unit tests -->
-
-1. requirements
-foundry
+The Tests are written in the foundry framework.
 
 ```bash
 $ forge test --skip "v1-migrator/node_modules/*"
@@ -126,8 +106,6 @@ Suite result: ok. 24 passed; 0 failed; 0 skipped; finished in 94.62ms (27.65ms C
 Ran 2 test suites in 99.72ms (189.66ms CPU time): 28 tests passed, 0 failed, 0 skipped (28 total tests)
 ```
 
-<!-- display the test coverage -->
-
 ``` bash
 $ forge coverage -skip "v1-migrator/node_modules/*"
 
@@ -137,24 +115,27 @@ $ forge coverage -skip "v1-migrator/node_modules/*"
 
 > ## Risk Assesment
 
-### Business Logic
+### Business Logic Risks and Mitigation
 
-* Risks
+#### Centrilazion Risk
 
-- centralization risk
-- unsafe use of transfer from
-- owner can be set to zero address
-- no limit on the fees
+Contracts have owners with privileged rights to perform admin tasks and need to be trusted to not perform malicious updates or drain funds.
 
-* Mitigation
 
-### Deployment
+#### Unsafe use of transfer()/transferFrom() with IERC20
 
-* Risks
+Some tokens do not implement the ERC20 standard properly but are still accepted by most code that accepts ERC20 tokens. For example Tether (USDT)'s transfer() and transferFrom() functions on L1 do not return booleans as the specification requires, and instead have no return value. When these sorts of tokens are cast to IERC20, their function signatures do not match and therefore the calls made, revert (see this link for a test case).
 
-- initializer can be frontrun
+Use OpenZeppelin's SafeERC20's safeTransfer()/safeTransferFrom() instead
 
-* Mitigation
+
+### Deployment risks and mitigation
+
+#### Initializer Frontrun
+
+Initializers could be front-run, allowing an attacker to either set their own values, take ownership of the contract, and in the best case forcing a re-deployment.
+
+consider deploying the contracts with a Factory Contract
 
 > ## Screen Recording
 
