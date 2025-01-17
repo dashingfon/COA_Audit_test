@@ -118,6 +118,8 @@ the test demonstrating the vulnurability can be run with
 ```bash
 forge test --skip "v1-migrator/node_modules/*" --match-test "test_MigrateAllAsset_different_token_owners"
 ```
+consider migrating the tokens based on the id
+
 > #### M-1
 
 when setting the Requirements.price with `function setTokenInfo` there is no upper limit on the price.
