@@ -59,29 +59,50 @@ The ATLACRE, ACRE, ATLPLOT, PLOT, ATLYARD and YARD contracts are ERC721A-complia
 
 ### High
 
-| Id     |  Title                                   |
-|--------|------------------------------------------|
-|        |                                          |
+| Id     |  Title                                                                                                  |
+|--------|---------------------------------------------------------------------------------------------------------|
+| H-0    |    no access control in token function mint                                                             |
+| H-1    |    Attacker can replace user migrated tokens by sending tokens to the migration contract                |
 
 > #### H-0
-> #### H-0
-> #### H-0
-> #### H-0
+
+There is no access control in the `function mint` in the contract Busd.sol and Prlz.sol.
+This allows anyone to mint tokens, an attacker can frontrun a user and mint the maximum amount of tokens. permanently DoSing the contract
+
+> #### H-1
+
+The migrator contract is used to transfer tokens from one version to another with the function 
+
+```solidity
+
+function migrateAllAsset(
+        uint[] memory _acre,
+        uint[] memory _plot,
+        uint[] memory _yard
+    ) external returns (bool success)
+
+```
+
+the test demonstrating the vulnurability can be run with
+
+```bash
+forge test --skip "v1-migrator/node_modules/*" --match-test "test_MigrateAllAsset_token_transfer"
+```
 
 ### Medium
 
-| Id     |  Title                                   |
-|--------|------------------------------------------|
-|        |                                          |
+| Id     |  Title                                                                                                  |
+|--------|---------------------------------------------------------------------------------------------------------|
+| M-0    |  Tokens can be migrated to a different id                                                               |
+| M-1    |  Requirements.price is not constrained                                                                  |
+| M-2    |                                                                                                         |K
 
-### Low
+> #### M-0
 
-| Id     |  Title                                   |
-|--------|------------------------------------------|
-|        |                                          |
+the test demonstrating the vulnurability can be run with
 
-### Informational
+```bash
+forge test --skip "v1-migrator/node_modules/*" --match-test "test_MigrateAllAsset_different_token_owners"
+```
+> #### M-1
 
-| Id     |  Title                                   |
-|--------|------------------------------------------|
-|        |                                          |

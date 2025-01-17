@@ -9,12 +9,10 @@ This is my submission for The Mobi assesment
 | Severity               |  Found    |
 |------------------------|-----------|
 | High                   |   2       |
-| Medium                 |   4       |
-| Low                    |   5       |
-| Informational          |   1       |
+| Medium                 |   2       |
 
 
-[Audit Report](./reports/audit_report.md)
+[Manual Audit Report](./reports/audit_report.md)
 
 > ## Automated Tests and Analysis
 
@@ -148,5 +146,7 @@ Initializers could be front-run, allowing an attacker to either set their own va
 consider deploying the contracts with a Factory Contract
 
 > ## Screen Recording
+
+[Video]()
 
 
