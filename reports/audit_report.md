@@ -82,6 +82,12 @@ function migrateAllAsset(
     ) external returns (bool success)
 
 ```
+the contract first withdraws the token from the user and then mints a new token on the new contract.
+
+the migrator contract then calls `mintAsFreeMinter` on the new contract.
+the migrator then sends the first amount of tokens in its balance within the range of `(uint index = lastId; index < totalSupply; index++)`
+
+An attacker can take advantage of this by sending tokens to the migrator contract, this tokens are then sent to the user instead.
 
 the test demonstrating the vulnurability can be run with
 
@@ -89,15 +95,23 @@ the test demonstrating the vulnurability can be run with
 forge test --skip "v1-migrator/node_modules/*" --match-test "test_MigrateAllAsset_token_transfer"
 ```
 
+consider migrating the tokens based on the id.
+
 ### Medium
 
 | Id     |  Title                                                                                                  |
 |--------|---------------------------------------------------------------------------------------------------------|
 | M-0    |  Tokens can be migrated to a different id                                                               |
 | M-1    |  Requirements.price is not constrained                                                                  |
-| M-2    |                                                                                                         |K
+
 
 > #### M-0
+
+when migrating tokens, it is possible to migrate the tokens to a different id.
+This can happen if another user tries to mint _acreV2 before a user migrates _acreV1.
+the shift in id is equal to the number of _acreV2 the other user mints.
+
+since NFT are non-fungible, a mint of a different ID will result in a different NFT.
 
 the test demonstrating the vulnurability can be run with
 
@@ -105,4 +119,7 @@ the test demonstrating the vulnurability can be run with
 forge test --skip "v1-migrator/node_modules/*" --match-test "test_MigrateAllAsset_different_token_owners"
 ```
 > #### M-1
+
+when setting the Requirements.price with `function setTokenInfo` there is no upper limit on the price.
+this allows a malicious signer to set the price to a very high amount, temporary DOSing the contract.
 
