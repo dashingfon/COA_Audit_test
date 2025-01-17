@@ -8,10 +8,10 @@ This is my submission for The Mobi assesment
 
 | Severity               |  Found    |
 |------------------------|-----------|
-| High                   |   3       |
-| Medium                 |   3       |
-| Low                    |   3       |
-| Informational          |   3       |
+| High                   |   2       |
+| Medium                 |   4       |
+| Low                    |   5       |
+| Informational          |   1       |
 
 
 [Audit Report](./reports/audit_report.md)
