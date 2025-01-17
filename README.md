@@ -10,13 +10,17 @@ find attached the audit report at this location
 
 1. Slither
 
+<!-- explain slither -->
+
 requirements:
 
 ```bash
 
 ```
 
-2. 4nalyzer
+2. 4naly3er
+
+<!-- explain 4naly3er -->
 
 requirements:
 
