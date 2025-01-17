@@ -2,3 +2,7 @@
 cache/
 out/
 blob.txt
+.vscode/
+.mypy_cache/
+__pycache__/
+node_modules/

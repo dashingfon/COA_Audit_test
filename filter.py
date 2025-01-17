@@ -26,5 +26,5 @@ def strip(json_file: str):
 
     output["results"]["detectors"] = detectors
 
-    with open(f"{json_file[:-5]}_striped.json", 'w') as out:
+    with open(json_file, 'w') as out:
         json.dump(output, out, indent=4)

@@ -1,4 +1,7 @@
 {
-    "filter_paths": "(test/|v1-migrator/)",
-    "include_paths": "(v1-migrator/contracts/COA-Contracts/)"
+    "solc_remaps": [
+        "forge-std=../lib/forge-std/src",
+        "@openzeppelin/=./node_modules/@openzeppelin/"
+    ],
+    "filter_paths": "node_modules|dependencies"
 }

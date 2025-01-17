@@ -10,7 +10,7 @@ find attached the audit report at this location
 
 1. Slither
 
-<!-- explain slither -->
+<!-- explain slither and the procedure -->
 
 requirements:
 
@@ -20,7 +20,7 @@ requirements:
 
 2. 4naly3er
 
-<!-- explain 4naly3er -->
+<!-- explain 4naly3er, (must use wsl) and the procedure -->
 
 requirements:
 
